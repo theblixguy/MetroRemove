@@ -20,16 +20,16 @@
 #include <windows.h>
 #include <SDKDDKVer.h>
 
-    HWND _iconHwnd; // Window handle to the start button
-	HWND _iconParentHwnd; // Window handle to the start button parent
-	HWND _tBarListHwnd; // Window handle to the taskbar app container
-	HWND _mUIHwnd; // Window handle which has loaded windows.immersiveshell.serviceprovider.dll into memory
-	RECT _tBarList; // Taskbar app container's RECT structure 
-	RECT _icon; // Start button's RECT structure 
-	DWORD _mUIThreadId; // Id of the thread which has loaded windows.immersiveshell.serviceprovider.dll into memory
-	HANDLE _mUI; // Handle of the thread which has loaded windows.immersiveshell.serviceprovider.dll into memory
-	long _newLength; // New length of the taskbar
-	OSVERSIONINFOEX _osInfo;
+HWND _iconHwnd; // Window handle to the start button
+HWND _iconParentHwnd; // Window handle to the start button parent
+HWND _tBarListHwnd; // Window handle to the taskbar app container
+HWND _mUIHwnd; // Window handle which has loaded windows.immersiveshell.serviceprovider.dll into memory
+RECT _tBarList; // Taskbar app container's RECT structure 
+RECT _icon; // Start button's RECT structure 
+DWORD _mUIThreadId; // Id of the thread which has loaded windows.immersiveshell.serviceprovider.dll into memory
+HANDLE _mUI; // Handle of the thread which has loaded windows.immersiveshell.serviceprovider.dll into memory
+long _newLength; // New length of the taskbar
+OSVERSIONINFOEX _osInfo; // Operating system version structure 
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -44,7 +44,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		_osInfo.dwMinorVersion = 3;
 		VER_SET_CONDITION(cMask, VER_MAJORVERSION, VER_GREATER_EQUAL);
 		VER_SET_CONDITION(cMask, VER_MINORVERSION, VER_GREATER_EQUAL);
-		BOOL isWin81 = VerifyVersionInfo(&_osInfo, VER_MAJORVERSION | VER_MINORVERSION, cMask);
+		BOOL isWin81 = VerifyVersionInfo(&_osInfo, VER_MAJORVERSION | VER_MINORVERSION, cMask); // Compare 
 
 		if (isWin81 == TRUE) { // Good to go
 			
@@ -119,7 +119,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		std::wcout << "\n\nWIP"; // Still working
 	}
 
-	else {
+	else { // Invalid command-line arguments specified 
+
 		std::wcout << "Invalid command-line parameter \n\n Usage: \n --killstart : Remove start button \n --killmetro : Remove the Modern UI completely \n --sbopenav : Open the All Apps view only when the start button is pressed \n";
 		
 	}
