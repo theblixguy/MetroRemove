@@ -1,16 +1,16 @@
-/* 
+/*
 
-mrem.cpp
-
-Metro Remove: Remove start button and "Metro" UI
-
-|| Written by: Suyash Srijan
-|| suyashsrijan@outlook.com
-|| Tested on: Windows 8.1 Preview Build 9431 (should work on Windows 8 as well, but I have not tested it)
-
-|| You are free to use the code anywhere you want but this comment block must not be removed
-
-*/
+ mrem.cpp
+ 
+ Metro Remove: Remove start button and "Metro" UI
+ 
+ || Written by: Suyash Srijan
+ || suyashsrijan@outlook.com
+ || Tested on: Windows 8.1 Preview Build 9431 (should work on Windows 8 as well, but I have not tested it)
+ 
+ || You are free to use the code anywhere you want but this comment block must not be removed
+ 
+ */
 
 #pragma once
 
@@ -29,11 +29,25 @@ Metro Remove: Remove start button and "Metro" UI
 	DWORD _mUIThreadId; // Id of the thread which has loaded windows.immersiveshell.serviceprovider.dll into memory
 	HANDLE _mUI; // Handle of the thread which has loaded windows.immersiveshell.serviceprovider.dll into memory
 	long _newLength; // New length of the taskbar
+	OSVERSIONINFOEX _osInfo;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
 	if (lstrcmpi(argv[1], _T("--killstart")) == 0) { // Kill start button? Sure
 
+		// Checking if you are on 8.1 or not
+
+		DWORDLONG cMask = 0;
+		ZeroMemory(&_osInfo, sizeof(OSVERSIONINFOEX));
+		_osInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+		_osInfo.dwMajorVersion = 6;
+		_osInfo.dwMinorVersion = 3;
+		VER_SET_CONDITION(cMask, VER_MAJORVERSION, VER_GREATER_EQUAL);
+		VER_SET_CONDITION(cMask, VER_MINORVERSION, VER_GREATER_EQUAL);
+		BOOL isWin81 = VerifyVersionInfo(&_osInfo, VER_MAJORVERSION | VER_MINORVERSION, cMask);
+
+		if (isWin81 == TRUE) { // Good to go
+			
 		 std::wcout << "Trying to hide Start button"; // Tell user we are about to kill the start menu
 		_iconParentHwnd = FindWindow(_T("Shell_TrayWnd"), NULL); // Get the taskbar window handle
 		_iconHwnd = FindWindowEx(_iconParentHwnd, NULL, _T("Start"), NULL); // Get the start button handle
@@ -59,10 +73,16 @@ int _tmain(int argc, _TCHAR* argv[])
 			std::wcout << "\n\nStart button icon was successfully hidden"; 
 		}
 		else // Looks like the start button is already hidden
-		{
-			std::wcout << "\n\nFailed to hide the start button. (Error: " << GetLastError() << ")";
+			{
+				std::wcout << "\n\nFailed to hide the start button. (Error: " << GetLastError() << ")";
+			}
 		}
+
+		else // You're not on 8.1
+
+			std::wcout << "\n\nStart Button cannot be killed/hidden since you're running Windows 8 or lower";
 	}
+
 	else if (lstrcmpi(argv[1], _T("--killmetro")) == 0) { // Kill the entire metro interface? Sure
 
 		std::wcout << "Trying to kill Modern UI"; // Tell user we are about to kill the modern UI
