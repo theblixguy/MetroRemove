@@ -1,7 +1,8 @@
 /* 
+
 mrem.cpp
 
-Metro Remove: Remove start menu and "Metro" UI
+Metro Remove: Remove start button and "Metro" UI
 
 || Written by: Suyash Srijan
 || suyashsrijan@outlook.com
@@ -56,12 +57,10 @@ int _tmain(int argc, _TCHAR* argv[])
 		if (_reVal == 0) // Yay, the button was successfully hidden
 		{
 			std::wcout << "\n\nStart button icon was successfully hidden"; 
-			std::getwchar(); 
 		}
 		else // Looks like the start button is already hidden
 		{
 			std::wcout << "\n\nFailed to hide the start button. (Error: " << GetLastError() << ")";
-			std::getwchar();
 		}
 	}
 	else if (lstrcmpi(argv[1], _T("--killmetro")) == 0) { // Kill the entire metro interface? Sure
@@ -78,12 +77,10 @@ int _tmain(int argc, _TCHAR* argv[])
 		if (!_reVal == 0) // Yay, metro is completely gone now
 		{
 			std::wcout << "\n\nModern UI was successfully killed";
-			std::getwchar();
 		}
 		else // Something is wrong
 		{
 			std::wcout << "\n\nFailed to kill Modern UI (Error: " << GetLastError() << ")";
-			std::getwchar();
 		}
 	}
 
@@ -100,13 +97,12 @@ int _tmain(int argc, _TCHAR* argv[])
 		 */
 
 		std::wcout << "\n\nWIP"; // Still working
-		std::getwchar();
 	}
 
 	else {
 		std::wcout << "Invalid command-line parameter \n\n Usage: \n --killstart : Remove start button \n --killmetro : Remove the Modern UI completely \n --sbopenav : Open the All Apps view only when the start button is pressed \n";
-		std::getwchar();
+		
 	}
-
+                std::getwchar();
 }
 
