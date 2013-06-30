@@ -13,7 +13,6 @@ Metro Remove: Remove start menu and "Metro" UI
 
 #pragma once
 
-#include "targetver.h"
 #include <stdio.h>
 #include <tchar.h>
 #include <iostream>
