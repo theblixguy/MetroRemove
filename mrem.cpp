@@ -51,9 +51,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		*/
 
 		LRESULT _iconHdl = SendMessage(_iconHwnd, WM_CLOSE, NULL, NULL); // Send a WM_CLOSE message to start button
-		signed int _errIcon = static_cast<int>(_iconHdl); // Store the return value
+		signed int _reVal = static_cast<int>(_iconHdl); // Store the return value
 
-		if (_errIcon == 0) // Yay, the button was successfully hidden
+		if (_reVal == 0) // Yay, the button was successfully hidden
 		{
 			std::wcout << "\n\nStart button icon was successfully hidden"; 
 			std::getwchar(); 
@@ -74,8 +74,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		
 		HRESULT _mUIHdl = TerminateThread(_mUIHwnd, 0); // Terminate the thread
 
-		signed int _errIcon = static_cast<int>(_mUIHdl); // Store the return value
-		if (!_errIcon == 0) // Yay, metro is completely gone now
+		signed int _reVal = static_cast<int>(_mUIHdl); // Store the return value
+		if (!_reVal == 0) // Yay, metro is completely gone now
 		{
 			std::wcout << "\n\nModern UI was successfully killed";
 			std::getwchar();
