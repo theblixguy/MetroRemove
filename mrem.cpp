@@ -59,7 +59,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 		else // Looks like the start button is already hidden
 		{
-			std::wcout << "\n\nFailed to hide the start button. (The start button may already be hidden)"; 
+			std::wcout << "\n\nFailed to hide the start button. (Error: " << GetLastError() << ")";
 			std::getwchar();
 		}
 	}
@@ -67,7 +67,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		std::wcout << "Trying to kill Modern UI"; // Tell user we are about to kill the modern UI
 
-		_mUIHwnd = FindWindow(_T("ApplicationManager_DesktopShellWindow"), NULL); // Get the handle of the thread which controls the UI
+		_mUIHwnd = FindWindow(_T("ApplicationManager_ImmersiveShellWindow"), NULL); // Get the handle of the thread which controls the UI
 		GetWindowThreadProcessId(_mUIHwnd, &_mUIThreadId); // Get the thread ID
 		OpenThread(0x0001, 0, _mUIThreadId); // Open the thread and set the TERMINATE_THREAD flag
 		
@@ -79,9 +79,9 @@ int _tmain(int argc, _TCHAR* argv[])
 			std::wcout << "\n\nModern UI was successfully killed";
 			std::getwchar();
 		}
-		else // Looks like you have already killed metro before
+		else // Something is wrong
 		{
-			std::wcout << "\n\nFailed to kill Modern UI";
+			std::wcout << "\n\nFailed to kill Modern UI (Error: " << GetLastError() << ")";
 			std::getwchar();
 		}
 	}
@@ -93,8 +93,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		 Open the all apps view when start button on the keyboard is pressed
 		 To do that, we have to hook into the keyboard and capture the WM_KEYDOWN event and
 		 call CImmersiveLauncher::OnStartButtonPressed() which is found in twinui.dll and
-		 pass IMMERSIVELAUNCHERSHOWMETHOD and IMMERSIVELAUNCHERDISMISSMETHOD arguments. The function is undocumented so 
-		 I am studying the library to find out more details about the above parameters.
+		 pass IMMERSIVELAUNCHERSHOWMETHOD and IMMERSIVELAUNCHERDISMISSMETHOD arguments. The function is 
+		 undocumented so I am studying the library to find out more details about the above parameters.
 		 
 		 */
 
