@@ -19,13 +19,14 @@ Metro Remove: Remove start menu and "Metro" UI
 #include <windows.h>
 #include <SDKDDKVer.h>
 
-    HWND _iconHwnd; // Handle to the start button
-	HWND _iconParentHwnd; // Handle to the start button parent
-	HWND _tBarListHwnd; // Handle to the taskbar app container
-	HWND _mUIHwnd; // Handle to the thread which has loaded windows.immersiveshell.serviceprovider.dll into memory
+    HWND _iconHwnd; // Window handle to the start button
+	HWND _iconParentHwnd; // Window handle to the start button parent
+	HWND _tBarListHwnd; // Window handle to the taskbar app container
+	HWND _mUIHwnd; // Window handle which has loaded windows.immersiveshell.serviceprovider.dll into memory
 	RECT _tBarList; // Taskbar app container's RECT structure 
 	RECT _icon; // Start button's RECT structure 
 	DWORD _mUIThreadId; // Id of the thread which has loaded windows.immersiveshell.serviceprovider.dll into memory
+	HANDLE _mUI; // Handle of the thread which has loaded windows.immersiveshell.serviceprovider.dll into memory
 	long _newLength; // New length of the taskbar
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -67,11 +68,11 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		std::wcout << "Trying to kill Modern UI"; // Tell user we are about to kill the modern UI
 
-		_mUIHwnd = FindWindow(_T("ApplicationManager_ImmersiveShellWindow"), NULL); // Get the handle of the thread which controls the UI
-		GetWindowThreadProcessId(_mUIHwnd, &_mUIThreadId); // Get the thread ID
-		OpenThread(0x0001, 0, _mUIThreadId); // Open the thread and set the TERMINATE_THREAD flag
+		_mUIHwnd = FindWindow(_T("ApplicationManager_ImmersiveShellWindow"), NULL); // Get the handle of the immersive shell window
+		_mUIThreadId = GetWindowThreadProcessId(_mUIHwnd, NULL); // Get the thread ID
+		_mUI = OpenThread(THREAD_TERMINATE, FALSE, _mUIThreadId); // Open the thread and set the TERMINATE_THREAD flag and get its handle
 		
-		HRESULT _mUIHdl = TerminateThread(_mUIHwnd, 0); // Terminate the thread
+		HRESULT _mUIHdl = TerminateThread(_mUI, 0); // Terminate the thread
 
 		signed int _reVal = static_cast<int>(_mUIHdl); // Store the return value
 		if (!_reVal == 0) // Yay, metro is completely gone now
