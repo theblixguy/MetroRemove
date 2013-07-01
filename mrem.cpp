@@ -19,6 +19,9 @@
 #include <iostream>
 #include <windows.h>
 #include <SDKDDKVer.h>
+#include <VersionHelpers.h>
+#include <assert.h>
+#define VERSIONHELPERAPI FORCEINLINE BOOL
 
 HWND _iconHwnd; // Window handle to the start button
 HWND _iconParentHwnd; // Window handle to the start button parent
@@ -36,25 +39,17 @@ int _tmain(int argc, _TCHAR* argv[])
 	if (lstrcmpi(argv[1], _T("--killstart")) == 0) { // Kill start button? Sure
 
 		// Checking if you are on 8.1 or not
-
-		DWORDLONG cMask = 0;
-		ZeroMemory(&_osInfo, sizeof(OSVERSIONINFOEX));
-		_osInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-		_osInfo.dwMajorVersion = 6;
-		_osInfo.dwMinorVersion = 3;
-		VER_SET_CONDITION(cMask, VER_MAJORVERSION, VER_GREATER_EQUAL);
-		VER_SET_CONDITION(cMask, VER_MINORVERSION, VER_GREATER_EQUAL);
-		BOOL isWin81 = VerifyVersionInfo(&_osInfo, VER_MAJORVERSION | VER_MINORVERSION, cMask); // Compare 
-
-		if (isWin81 == TRUE) { // Good to go
-			
+		assert("\n\nStart Button cannot be killed/hidden since you're not running Windows 8.1", IsWindows8_1OrGreater());
+		
+		// You're on 8.1, good
 		 std::wcout << "Trying to hide Start button"; // Tell user we are about to kill the start menu
 		_iconParentHwnd = FindWindow(_T("Shell_TrayWnd"), NULL); // Get the taskbar window handle
 		_iconHwnd = FindWindowEx(_iconParentHwnd, NULL, _T("Start"), NULL); // Get the start button handle
 
 		/*
 
-		SUPER BUGGY: The following code might not work correctly and crash the explorer process 
+		SUPER BUGGY: I was trying to resize the taskbar so that the empty space left after removing the
+		start button gets utilized but the code below is really buggy and crashes the explorer process most of the time 
 		so it has been commented out while I am working on a fix.
 
 		_tBarListHwnd = FindWindowEx(_iconParentHwnd, NULL, _T("ReBarWindow32"), NULL);
@@ -77,11 +72,6 @@ int _tmain(int argc, _TCHAR* argv[])
 				std::wcout << "\n\nFailed to hide the start button. (Error: " << GetLastError() << ")";
 			}
 		}
-
-		else // You're not on 8.1
-
-			std::wcout << "\n\nStart Button cannot be killed/hidden since you're running Windows 8 or lower";
-	}
 
 	else if (lstrcmpi(argv[1], _T("--killmetro")) == 0) { // Kill the entire metro interface? Sure
 
