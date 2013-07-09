@@ -8,9 +8,9 @@ You will have to rerun the app if explorer.exe restarts though.
 
 Command-line arguments needed:
 
---metrokill : Hides Modern UI
+--killmetro : Hides Modern UI
 
---startkill : Hides start button
+--killstart : Hides start button
 
 --sbopenav : Lets you open the All Apps view only when you press the Start button on the keyboard (WIP)
 
