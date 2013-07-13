@@ -1,4 +1,4 @@
-MetroRemove
+MetroRemove (now with GUI)
 ===========
 
 Removes start button and Modern UI. It can also let you open the All Apps view only when you press the Start button on the keyboard (WIP)
@@ -14,6 +14,8 @@ Command-line arguments needed:
 
 --sbopenav : Lets you open the All Apps view only when you press the Start button on the keyboard (WIP)
 
-Tested on: Windows 8.1 Preview
+** UPDATE ** GUI version now available :) !
+
+Tested on: Windows 8.1 Preview and Windows 8 RTM
 This is the initial release so things MIGHT not work correctly always. I am working to iron out the bugs..
-GUI extension coming soon!
+
