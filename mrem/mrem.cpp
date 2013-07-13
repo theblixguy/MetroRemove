@@ -6,7 +6,7 @@
  
  || Written by: Suyash Srijan
  || suyashsrijan@outlook.com
- || Tested on: Windows 8.1 Preview Build 9431 (should work on Windows 8 as well, but I have not tested it)
+ || Tested on: Windows 8.1 Preview Build 9431, Windows 8 RTM
  
  || You are free to use the code anywhere you want but this comment block must not be removed
  
@@ -32,7 +32,6 @@ RECT _icon; // Start button's RECT structure
 DWORD _mUIThreadId; // Id of the thread which has loaded windows.immersiveshell.serviceprovider.dll into memory
 HANDLE _mUI; // Handle of the thread which has loaded windows.immersiveshell.serviceprovider.dll into memory
 long _newLength; // New length of the taskbar
-OSVERSIONINFOEX _osInfo; // Operating system version structure 
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -70,6 +69,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		else // Looks like the start button is already hidden
 			{
 				std::wcout << "\n\nFailed to hide the start button. (Error: " << GetLastError() << ")";
+				std::getwchar();
 			}
 		}
 
@@ -91,6 +91,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		else // Something is wrong
 		{
 			std::wcout << "\n\nFailed to kill Modern UI (Error: " << GetLastError() << ")";
+            std::getwchar();
 		}
 	}
 
@@ -107,13 +108,15 @@ int _tmain(int argc, _TCHAR* argv[])
 		 */
 
 		std::wcout << "\n\nWIP"; // Still working
+        std::getwchar();
 	}
 
 	else { // Invalid command-line arguments specified 
 
 		std::wcout << "Invalid command-line parameter \n\n Usage: \n --killstart : Remove start button \n --killmetro : Remove the Modern UI completely \n --sbopenav : Open the All Apps view only when the start button is pressed \n";
+                std::getwchar();
 		
 	}
-                std::getwchar();
+                return 0;
 }
 
