@@ -32,6 +32,8 @@ RECT _icon; // Start button's RECT structure
 DWORD _mUIThreadId; // Id of the thread which has loaded windows.immersiveshell.serviceprovider.dll into memory
 HANDLE _mUI; // Handle of the thread which has loaded windows.immersiveshell.serviceprovider.dll into memory
 long _newLength; // New length of the taskbar
+DWORD _expPID; // PID of explorer process
+HANDLE _eSThandle; // Handle to system tray window
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -111,9 +113,28 @@ int _tmain(int argc, _TCHAR* argv[])
         std::getwchar();
 	}
 
+	else if (lstrcmpi(argv[1], _T("--resexplr")) == 0) {
+
+		// Restart Explorer
+
+		HWND _explorerSysTray = FindWindow(TEXT("Shell_TrayWnd"), NULL); // Find the system tray window
+		GetWindowThreadProcessId(_explorerSysTray, &_expPID); // Get the explorer.exe PID
+		_eSThandle = OpenProcess(PROCESS_TERMINATE, FALSE, _expPID); // Set the PROCESS_TERMINATE flag
+
+		if (_eSThandle)
+
+		{
+			TerminateProcess(_eSThandle, 0); // Terminate the explorer.exe process
+		}
+
+		Sleep(2000); // Take a nap
+		ShellExecute(NULL, NULL, TEXT("explorer.exe"), NULL, NULL, SW_HIDE); // Launch a brand sparkling new Explorer process (sadly, it opens a new Explorer window as well... I know its annoying but #DealWithIt)
+	
+	}
+	
 	else { // Invalid command-line arguments specified 
 
-		std::wcout << "Invalid command-line parameter \n\n Usage: \n --killstart : Remove start button \n --killmetro : Remove the Modern UI completely \n --sbopenav : Open the All Apps view only when the start button is pressed \n";
+		std::wcout << "Invalid command-line parameter \n\n Usage: \n --killstart : Remove start button \n --killmetro : Remove the Modern UI completely \n --sbopenav : Open the All Apps view only when the start button is pressed \n --resexplr : Restart the explorer process";
                 std::getwchar();
 		
 	}
