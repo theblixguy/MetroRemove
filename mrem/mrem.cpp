@@ -128,8 +128,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 
 		Sleep(2000); // Take a nap
-		ShellExecute(NULL, NULL, TEXT("explorer.exe"), NULL, NULL, SW_HIDE); // Launch a brand sparkling new Explorer process (sadly, it opens a new Explorer window as well... I know its annoying but #DealWithIt)
-	
+		ShellExecute(NULL, NULL, TEXT("cmd.exe /c explorer.exe"), NULL, NULL, SW_HIDE); // Launch a brand sparkling new Explorer process (thanks to Shantanu (@zeusk)
 	}
 	
 	else { // Invalid command-line arguments specified 
