@@ -23,67 +23,68 @@
 #include <assert.h>
 #define VERSIONHELPERAPI FORCEINLINE BOOL
 
+// Miscellaneous variables //
+
+LONG ret = ERROR_SUCCESS; // Value of ERROR_SUCCESS
+BYTE buf = MAX_PATH; // Set value of buffer
+int _temp = 0; // Temp variable
+KBDLLHOOKSTRUCT kbdStruct; // Keyboard Hook structure
+HHOOK _keyHook; // Keyboard Hook handle
+MSG _msg; // Temp message
+HKEY key = NULL; // Handle to registry key we want to modify
+
+// Window Handles //
+
 HWND _iconHwnd; // Window handle of start button
 HWND _iconParentHwnd; // Window handle of start button parent
 HWND _tBarListHwnd; // Window handle of taskbar app container
-HWND _mUIHwnd; // Window handle of the window which has loaded windows.immersiveshell.serviceprovider.dll into memory
-RECT _tBarList; // Taskbar app container's RECT structure 
-RECT _icon; // Start button's RECT structure 
-DWORD _mUIThreadId; // Id of the thread which has loaded windows.immersiveshell.serviceprovider.dll into memory
-HANDLE _mUI; // Handle of the thread which has loaded windows.immersiveshell.serviceprovider.dll into memory
-long _newLength; // New length of the taskbar
-DWORD _expPID; // PID of explorer process
-HANDLE _eSThandle; // Handle to explorer.exe
 HWND _explorerSysTray; // Window handle of the system tray
-HHOOK _keyHook; // Keyboard hook
-KBDLLHOOKSTRUCT _hookStruct; // Keyboard hook structure
-MSG _msg; // Temp message
-HKEY key = NULL; // Handle to registry key we want to modify
-LONG ret = ERROR_SUCCESS; // Value of ERROR_SUCCESS
+HWND _mUIHwnd; // Window handle of the window which has loaded windows.immersiveshell.serviceprovider.dll into memory
+
+// DWORD variables //
+
+DWORD _mUIThreadId; // Id of the thread which has loaded windows.immersiveshell.serviceprovider.dll into memory
+DWORD _expPID; // PID of explorer process
+DWORD dwBufSize = sizeof(buf); // Set size of buffer
+DWORD ENABLE_APPS_VIEW = 1;  // Enable apps view value (0x00000001)
+DWORD DISABLE_APPS_VIEW = 0;  // Disable apps view value (0x00000000)
+
+// HANDLE variables //
+
+HANDLE _mUI; // Handle of the thread which has loaded windows.immersiveshell.serviceprovider.dll into memory
+HANDLE _eSThandle; // Handle to explorer.exe
+
 
 LRESULT WINAPI keyDownEvent(int nCode, WPARAM wParam, LPARAM lParam)
 {
-	if ((nCode == HC_ACTION) && ((wParam == VK_RWIN) || (wParam == WM_KEYDOWN))) // Windows key is pressed
+	if ((wParam == WM_SYSKEYDOWN) || (wParam == WM_KEYDOWN)) // Keydown detected
 	{
-		ret = RegOpenKeyEx(HKEY_CURRENT_USER, TEXT("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\StartPage"), 0, KEY_ALL_ACCESS, &key); // Try opening registry key
-
-		if (ret == ERROR_SUCCESS) // The key exists!
-
+		KBDLLHOOKSTRUCT kbdStruct = *(((KBDLLHOOKSTRUCT *) lParam)); // Load lParam data into kbdStruct structure
+		if ((kbdStruct.vkCode == VK_LWIN) || (kbdStruct.vkCode == VK_RWIN))  // Windows key pressed
 		{
-			BYTE buf = MAX_PATH; // Set value of buffer
-			DWORD dwBufSize = sizeof(buf); // Set size of buffer
-			DWORD ENABLE_APPS_VIEW = 1; // Open Apps view when StartScreen is opened
-			DWORD DISABLE_APPS_VIEW = 0; // Don't open Apps view when Start Screen is opened
-			RegQueryValueEx(key, TEXT("MakeAllAppsDefault"), NULL, NULL, &buf, &dwBufSize); // Get value of MakeAllAppsDefault subkey
-
-			if (buf == 1) // Value is 1 (ON)
-			
-			{
-				RegSetValueEx(key, TEXT("MakeAllAppsDefault"), NULL, REG_DWORD, (const BYTE*) DISABLE_APPS_VIEW, sizeof(DISABLE_APPS_VIEW)); // Set value to 0 (OFF)
+			if (_temp == 0) {
+				RegSetValueEx(key, TEXT("MakeAllAppsDefault"), NULL, REG_DWORD, (const BYTE*) &DISABLE_APPS_VIEW, sizeof(DISABLE_APPS_VIEW)); // Set value to 0 (OFF)
+				_temp = 1;
 			}
 
-			else // Value is 0 (OFF)
-
-			{
-				RegSetValueEx(key, TEXT("MakeAllAppsDefault"), NULL, REG_DWORD, (const BYTE*) ENABLE_APPS_VIEW, sizeof(ENABLE_APPS_VIEW)); // Set value to 1 (ON)
-			}
+			else if (_temp == 1) {
+				RegSetValueEx(key, TEXT("MakeAllAppsDefault"), NULL, REG_DWORD, (const BYTE*) &ENABLE_APPS_VIEW, sizeof(ENABLE_APPS_VIEW)); // Set value to 1 (ON)
+				_temp = 0;
 		}
-
-		else // Error occured
-
-		{
-			std::wcout << "Error accessing registry. Error: " << GetLastError();
+			return CallNextHookEx(NULL, nCode, wParam, lParam); // Pass info to next hook procedure
 		}
-
-		RegCloseKey(key); // Close the registry key
-
 	}
-	return CallNextHookEx(_keyHook, nCode, wParam, lParam); // Pass info to next hook procedure
 }
 
 int _tmain(int argc, _TCHAR* argv[])
-
 {
+	ret = RegOpenKeyEx(HKEY_CURRENT_USER, TEXT("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\StartPage"), 0, KEY_ALL_ACCESS, &key); // Open registry and get key handle
+	
+	if (!ret == ERROR_SUCCESS) // Something bad happened
+	{
+		std::wcout << "Error querying registry [" << GetLastError() << "]";
+	}
+	
 	if (lstrcmpi(argv[1], _T("--killstart")) == 0) { // Kill start button? Sure
 
 		// Checking if you are on 8.1 or not
@@ -136,7 +137,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		assert("\n\nStart button trick cannot be applied since you're not running Windows 8.1", IsWindows8_1OrGreater());
 
 		// You're on 8.1, good
-		_keyHook = SetWindowsHookEx(WH_KEYBOARD_LL, (HOOKPROC)keyDownEvent, GetModuleHandle(NULL), 0); // Set keyboard hook
+		_keyHook = SetWindowsHookEx(WH_KEYBOARD_LL, (HOOKPROC) keyDownEvent, GetModuleHandle(NULL), 0); // Set keyboard hook
 
 		while (GetMessage(&_msg, NULL, 0, 0)) // Loop in order to dispatch and recieve system messages
 		{
@@ -176,6 +177,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		
 	}
 
+	RegCloseKey(key); // Close registry key handle
 	UnhookWindowsHookEx(_keyHook); // Unhook the keyboard hook
 	return 0; // Do I really need to explain what this does?
 
