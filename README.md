@@ -12,10 +12,9 @@ Command-line arguments needed:
 
 --killstart : Hides start button
 
---sbopenav : Lets you open the All Apps view only when you press the Start button on the keyboard (WIP)
+--sbopenav : Lets you open the Start Screen only when you press the Start button on the keyboard (Experimental)
 
 ** UPDATE ** GUI version now available :) !
 
 Tested on: Windows 8.1 Preview and Windows 8 RTM
-This is the initial release so things MIGHT not work correctly always. I am working to iron out the bugs..
 
