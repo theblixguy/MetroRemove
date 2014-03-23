@@ -18,25 +18,33 @@ namespace mremGUI
             InitializeComponent();
         }
 
+        private void Startmrem(string args)
+        {
+            Process process = new Process();
+            process.StartInfo.FileName = Application.StartupPath + @"\mrem.exe";
+            process.StartInfo.Arguments = args;
+            process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            process.Start();
+        }
+
         private void button3_Click(object sender, EventArgs e)
         {
-            Process.Start("mrem.exe", "--sbopenav"); 
+            Startmrem("--sbopenav");
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Process.Start("mrem.exe", "--killstart");
+            Startmrem("--killstart");
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Process.Start("mrem.exe", "--killmetro");
+            Startmrem("--killmetro");
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            Process.Start("mrem.exe", "--resexplr");
-
+            Startmrem("--resexplr");
         }
         private void button5_Click(object sender, EventArgs e)
         {
